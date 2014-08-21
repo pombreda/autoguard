@@ -23,3 +23,6 @@ venv/
 # local files
 local_settings.ini
 sentry.sqlite
+
+# for .dockerignore
+.git
