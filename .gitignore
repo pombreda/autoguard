@@ -1,0 +1,25 @@
+# Temporary files
+.*.swp
+*.pyc
+*.pyo
+*.mo
+.DS_Store
+.idea
+
+# Testing and co
+reports/
+.tox
+
+# Build-related files
+docs/_build
+.coverage
+*.egg-info
+*.egg
+setup.cfg
+build/
+dist/
+venv/
+
+# local files
+local_settings.ini
+sentry.sqlite
