@@ -20,13 +20,14 @@ setup(
     long_description=long_description,
 
     url='https://github.com/Polyconseil/autoguard',
-    author="Polyconseil",
-    author_email="opensource+autoguard@polyconseil.fr",
+    author='Polyconseil',
+    author_email='opensource+autoguard@polyconseil.fr',
     license='BSD',
 
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
         'Topic :: Software Development :: Build Tools',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
