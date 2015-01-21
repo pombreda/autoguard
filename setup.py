@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2014 Polyconseil SAS
+# Copyright (c) 2014-2015 Polyconseil SAS
 # This software is distributed under the two-clause BSD license.
 
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
