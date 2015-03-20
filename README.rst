@@ -36,16 +36,3 @@ Run the following commands:
     $ autoguard start
 
 The `autoguard` command is equivalent to `sentry --config=./autoguard/sentry_conf.py`.
-
-
-Docker image
-------------
-
-.. code-block:: sh
-
-    $ docker build -t <image_name> .  # Build the base image
-    $ # Add configuration (e.g. settings.ini file)
-    $ docker run -rm -t -i <image_name> /app/venv/bin/autoguard upgrade  # upgrade database
-    $ docker run -rm -t -i <image_name> /app/venv/bin/autoguard createsuperuser  # only the first time
-    $ docker run -rm -t -i <image_name> /app/venv/bin/autoguard repair --owner=<superuser>  # only the first time
-    $ docker run -p <host_port>:9000 --name <instance_name> -d <image_name>
