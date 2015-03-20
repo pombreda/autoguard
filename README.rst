@@ -23,7 +23,7 @@ Security
 Autoguard expects to run behind a **HTTPS** reverse proxy; that proxy *MUST* set the ``X-Forwarded-Proto`` HTTP header to ``https`` for HTTPS requests.
 
 
-Setup
+Usage
 -----
 
 Run the following commands:
@@ -32,7 +32,7 @@ Run the following commands:
 
     $ autoguard upgrade
     $ autoguard createsuperuser
-    $ autoguard repair --owner=<superuser>
     $ autoguard start
+    $ autoguard celery worker -B
 
 The `autoguard` command is equivalent to `sentry --config=./autoguard/sentry_conf.py`.

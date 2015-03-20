@@ -37,10 +37,10 @@ setup(
     packages=find_packages(exclude=['venv', 'contrib', 'docs', 'tests*']),
 
     install_requires=[
-        'sentry[postgres]==6.4.4',
-        'getconf==1.0.1',
-        'python-memcached==1.53',  # for cache
-        'nydus==0.10.7',  # for buffers
+        'sentry[postgres]==7.4.1',
+        'getconf==1.2.1',
+        'python-memcached==1.54',  # for cache
+        'nydus==0.10.8',  # for redis
     ],
 
     package_data={

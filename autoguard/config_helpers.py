@@ -13,9 +13,13 @@ def url_value_converter(value):
     return value_to_convert.get(value, value)
 
 
+def get_hostname(url):
+    parsed = urlparse.urlparse(url)
+    return parsed.hostname
+
+
 def database_from_url(url):
     db_shortcuts = {
-        'postgresql': 'django.db.backends.postgresql_psycopg2',
         'postgres': 'django.db.backends.postgresql_psycopg2',
         'sqlite': 'django.db.backends.sqlite3',
     }
@@ -46,6 +50,7 @@ def mail_from_url(url):
     }
 
     parsed = urlparse.urlparse(url)
+    parsed_qs = urlparse.parse_qs(parsed.query)
     config = {
         'backend': backend_shortcuts.get(parsed.scheme, parsed.scheme),
         'user': parsed.username,
@@ -53,7 +58,8 @@ def mail_from_url(url):
         'host': parsed.hostname,
         'port': parsed.port,
         'use_tls': False,
-        'sender': "no-reply@{}".format(parsed.hostname if parsed.hostname else 'localhost')
+        'sender': "no-reply@{}".format(parsed.hostname if parsed.hostname else 'localhost'),
+        'prefix': parsed_qs.get('prefix', ['[AUTOGUARD]'])[0],
     }
     config.update({
         key: url_value_converter(value[0])
@@ -62,42 +68,34 @@ def mail_from_url(url):
     return config
 
 
-def cache_from_url(url):
-    backend_shortcuts = {
-        'db': 'django.core.cache.backends.db.DatabaseCache',
-        'dummy': 'django.core.cache.backends.dummy.DummyCache',
-        'file': 'django.core.cache.backends.filebased.FileBasedCache',
-        'mem': 'django.core.cache.backends.locmem.LocMemCache',
-        'memcached': 'django.core.cache.backends.memcached.MemcachedCache'
-    }
-
+def sentry_caches_from_url(url):
     parsed = urlparse.urlparse(url)
-    return {
-        'BACKEND': backend_shortcuts.get(parsed.scheme, parsed.scheme),
-        'LOCATION': parsed.netloc,
-    }
+    backend = parsed.scheme
 
+    backends = {
+        'redis': {
+            'sentry': 'sentry.cache.redis.RedisCache',
+            'buffer': 'sentry.buffer.redis.RedisBuffer',
+            'tsdb': 'sentry.tsdb.redis.RedisTSDB',
+            'quota': 'sentry.quotas.redis.RedisQuota',
+            'rate_limits': 'sentry.ratelimits.redis.RedisRateLimiter',
 
-def sentry_buffer_from_url(url):
-    backend_shortcuts = {
-        'base': 'sentry.buffer.base.Buffer',
-        'redis': 'sentry.buffer.redis.RedisBuffer',
-    }
+            'redis_options': {'hosts': {0: {'host': parsed.hostname, 'port': parsed.port}}},
+            'django_caches': {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}},
+        },
+        'memcached': {
+            'sentry': 'sentry.cache.django.DjangoCache',
+            'buffer': 'sentry.buffer.base.Buffer',  # TODO: check alternative backends
+            'tsdb': 'sentry.tsdb.dummy.DummyTSDB',
+            'quota': 'sentry.quotas.Quota',
+            'rate_limits': 'sentry.ratelimits.base.RateLimiter',
 
-    parsed = urlparse.urlparse(url)
-    config = {
-        'backend': backend_shortcuts.get(parsed.scheme, parsed.scheme),
-        'options': {},
-    }
-
-    if config['backend'] == backend_shortcuts['redis']:
-        config['options'] = {
-            'hosts': {
-                0: {
-                    'host': parsed.hostname,
-                    'port': parsed.port,
-                }
-            }
+            'redis_options': {},
+            'django_caches': {'default': {
+                'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+                'LOCATION': [parsed.netloc],
+            }},
         }
+    }
 
-    return config
+    return backends[backend]
