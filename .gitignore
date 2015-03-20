@@ -24,5 +24,3 @@ venv/
 local_settings.ini
 sentry.sqlite
 
-# for .dockerignore
-.git
